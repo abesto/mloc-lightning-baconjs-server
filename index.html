@@ -70,7 +70,7 @@ read.onValue(function(value) {
 app.post '/tab', (req, res) ->
   redis.incr 'tab', (err, id) ->
     return res.send 500, err if err
-    key = tabKey(id)
+    key = idToRedisKey(id)
     json = JSON.stringify {id: id, text: req.body.text}
     redis.set key, json, (err) ->
       return res.send 500, err if err
@@ -89,7 +89,7 @@ app.post '/tab', (req, res) ->
 					<pre><code data-trim contenteditable>
 app.post '/tab', (req, res) ->
   id = Bacon.fromNodeCallback(redis.incr, 'tab').toProperty()
-  key = id.map(tabKey)
+  key = id.map(idToRedisKey)
   json = Bacon.combineTemplate({id: id, text: req.body.text}).map(JSON.stringify)
   create = Bacon.fromNodeCallback(redis.set, key, json)
   addToList = create.flatMap -> Bacon.fromNodeCallback(redis.rpush, tabsListKey, id)
@@ -107,7 +107,12 @@ respond = (res, stream, retCode) ->
 					<h2>Links</h2>
                                         <ul>
                                           <li>These slides: <a href="http://tinyurl.com/m15lbs">http://tinyurl.com/m15lbs</a></li>
-                                          <li>Bacon.js: <a href="https://github.com/baconjs/bacon.js">https://github.com/baconjs/bacon.js</a></li>
+                                          <li>
+                                            Bacon.js: <a href="https://github.com/baconjs/bacon.js">https://github.com/baconjs/bacon.js</a>
+                                            <ul>
+                                              <li><a href="https://github.com/baconjs/bacon.js#bacon-fromnodecallback"><code>Bacon.fromNodeCallback</code></a></li>
+                                            </ul>
+                                          </li>
                                           <li>rx-node: <a href="https://github.com/Reactive-Extensions/rx-node">https://github.com/Reactive-Extensions/rx-node</a></li>
                                         </ul>
 				</section>
